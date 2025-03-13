@@ -8,6 +8,7 @@ import {
   useEdgesState,
   type OnConnect,
   ControlButton,
+  Edge,
 } from "@xyflow/react";
 import dagre from "dagre";
 import ReplayIcon from "@mui/icons-material/Replay";
@@ -15,30 +16,41 @@ import ReplayIcon from "@mui/icons-material/Replay";
 import "@xyflow/react/dist/style.css";
 import { initialNodes, nodeTypes } from "../nodes";
 import { initialEdges, edgeTypes } from "../edges";
+import { useLocation } from "react-router-dom";
 
 const dagreGraph = new dagre.graphlib.Graph();
 dagreGraph.setDefaultEdgeLabel(() => ({}));
 
-const getLayoutedElements = (nodes, edges, direction = "LR") => {
-  dagreGraph.setGraph({ rankdir: direction });
-
-  nodes.forEach((node) => {
-    dagreGraph.setNode(node.id, { width: 200, height: 100 });
+const getLayoutedElements = (nodes, edges) => {
+  dagreGraph.setGraph({
+    rankdir: "LR", // Zmiana na układ z góry na dół (lub zostaw "LR" jeśli chcesz poziomo)
+    align: "UL",
+    nodesep: 50, // Zwiększenie odstępu między węzłami
+    edgesep: 20,
+    ranksep: 100, // Odstęp między poziomami
   });
 
+  // Dodanie węzłów do grafu
+  nodes.forEach((node) => {
+    dagreGraph.setNode(node.id, { width: 250, height: 150 }); // Większe węzły dla lepszej widoczności
+  });
+
+  // Dodanie krawędzi
   edges.forEach((edge) => {
     dagreGraph.setEdge(edge.source, edge.target);
   });
 
+  // Uruchomienie algorytmu layoutu
   dagre.layout(dagreGraph);
 
+  // Aktualizacja pozycji węzłów
   const layoutedNodes = nodes.map((node) => {
     const nodeWithPosition = dagreGraph.node(node.id);
     return {
       ...node,
       position: {
-        x: nodeWithPosition.x,
-        y: nodeWithPosition.y,
+        x: nodeWithPosition.x - 125, // Centrowanie węzła
+        y: nodeWithPosition.y - 75,
       },
     };
   });
@@ -47,6 +59,7 @@ const getLayoutedElements = (nodes, edges, direction = "LR") => {
 };
 
 export default function Graph() {
+  const location = useLocation();
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const onConnect: OnConnect = useCallback(
@@ -55,9 +68,11 @@ export default function Graph() {
   );
 
   useEffect(() => {
+    const newNodes = location.state.nodes;
+    const newEdges = location.state.edges;
     const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
-      nodes,
-      edges,
+      newNodes,
+      newEdges,
     );
     setNodes(layoutedNodes);
     setEdges(layoutedEdges);
