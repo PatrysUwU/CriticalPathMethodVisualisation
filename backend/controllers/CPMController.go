@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"math"
+	"sort"
 	"strings"
 )
 
@@ -173,9 +174,16 @@ func RealData(c *fiber.Ctx) error {
 		fmt.Println(node)
 	}
 
+	keys := make([]string, 0, len(nodeMap))
+	for key := range nodeMap {
+		keys = append(keys, key)
+	}
+
+	sort.Strings(keys)
+
 	var nodes []CPMNode
-	for _, node := range nodeMap {
-		nodes = append(nodes, *node)
+	for _, key := range keys {
+		nodes = append(nodes, *nodeMap[key])
 	}
 
 	var edges []Edge

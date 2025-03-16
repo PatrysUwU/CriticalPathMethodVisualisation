@@ -35,6 +35,7 @@ const validationSchema = Yup.object({
 export default function Home() {
   const navigate = useNavigate();
   const [formValues, setFormValues] = useState(initialValues);
+  const [location, setLocation] = useState("graph");
 
   useEffect(() => {
     const storedValues = localStorage.getItem("formData");
@@ -46,7 +47,7 @@ export default function Home() {
   return (
     <Container maxWidth="md" sx={{ textAlign: "center", mt: 10 }}>
       <Typography variant="h3" gutterBottom>
-        Wpisz Dane
+        Fill in the data
       </Typography>
 
       <Formik
@@ -68,7 +69,9 @@ export default function Home() {
           const newEdges = response.data.edges
             ? response.data.edges.map((item) => ({ ...item }))
             : [];
-          navigate("/graph", { state: { nodes: newNodes, edges: newEdges } });
+          navigate(`/${location}`, {
+            state: { nodes: newNodes, edges: newEdges },
+          });
         }}
       >
         {({ values, handleChange, errors, touched }) => (
@@ -164,9 +167,23 @@ export default function Home() {
               type="submit"
               variant="contained"
               color="primary"
-              sx={{ mt: 3 }}
+              sx={{ mt: 3, mr: 2 }}
+              onClick={() => {
+                setLocation("graph");
+              }}
             >
-              Submit
+              Show Graph
+            </Button>
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              sx={{ mt: 3 }}
+              onClick={() => {
+                setLocation("table");
+              }}
+            >
+              Show Table
             </Button>
             <Button
               variant="outlined"

@@ -18,25 +18,25 @@ export function CPMNode({ data }: NodeProps<CPMNode>) {
     >
       <Grid2 container spacing={2}>
         <Grid2 size={4}>
-          <NodeBox>{data.es || 0}</NodeBox>
+          <NodeBox title={"Earliest start"}>{data.es || 0}</NodeBox>
         </Grid2>
         <Grid2 size={4}>
-          <NodeBox>{data.t || 0}</NodeBox>
+          <NodeBox title={"Time"}>{data.t || 0}</NodeBox>
         </Grid2>
         <Grid2 size={4}>
-          <NodeBox>{data.ef || 0}</NodeBox>
+          <NodeBox title={"Earliest finish"}>{data.ef || 0}</NodeBox>
         </Grid2>
         <Grid2 size={12}>
           <NodeBox>{data.label || ""}</NodeBox>
         </Grid2>
         <Grid2 size={4}>
-          <NodeBox>{data.ls || 0}</NodeBox>
+          <NodeBox title={"Latest start"}>{data.ls || 0}</NodeBox>
         </Grid2>
         <Grid2 size={4}>
-          <NodeBox>{data.z || 0}</NodeBox>
+          <NodeBox title={"Reserve"}>{data.z || 0}</NodeBox>
         </Grid2>
         <Grid2 size={4}>
-          <NodeBox>{data.lf || 0}</NodeBox>
+          <NodeBox title={"Latest finish"}>{data.lf || 0}</NodeBox>
         </Grid2>
       </Grid2>
 

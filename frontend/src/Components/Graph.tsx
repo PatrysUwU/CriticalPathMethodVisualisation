@@ -23,33 +23,27 @@ dagreGraph.setDefaultEdgeLabel(() => ({}));
 
 const getLayoutedElements = (nodes, edges) => {
   dagreGraph.setGraph({
-    rankdir: "LR", // Zmiana na układ z góry na dół (lub zostaw "LR" jeśli chcesz poziomo)
-    align: "UL",
-    nodesep: 50, // Zwiększenie odstępu między węzłami
+    rankdir: "LR",
+    nodesep: 50,
     edgesep: 20,
-    ranksep: 100, // Odstęp między poziomami
+    ranksep: 100,
   });
 
-  // Dodanie węzłów do grafu
   nodes.forEach((node) => {
-    dagreGraph.setNode(node.id, { width: 250, height: 150 }); // Większe węzły dla lepszej widoczności
+    dagreGraph.setNode(node.id, { width: 250, height: 150 });
   });
 
-  // Dodanie krawędzi
   edges.forEach((edge) => {
     dagreGraph.setEdge(edge.source, edge.target);
   });
-
-  // Uruchomienie algorytmu layoutu
   dagre.layout(dagreGraph);
 
-  // Aktualizacja pozycji węzłów
   const layoutedNodes = nodes.map((node) => {
     const nodeWithPosition = dagreGraph.node(node.id);
     return {
       ...node,
       position: {
-        x: nodeWithPosition.x - 125, // Centrowanie węzła
+        x: nodeWithPosition.x - 125,
         y: nodeWithPosition.y - 75,
       },
     };
