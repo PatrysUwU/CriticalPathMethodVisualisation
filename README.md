@@ -1,8 +1,8 @@
 ## Technologies
 
-- **Frontend:**
+- **Frontend:**<br>
   ![My Skills](https://skillicons.dev/icons?i=react,ts)
-- **Backend:**
+- **Backend:**<br>
   ![My Skills](https://skillicons.dev/icons?i=go)
 
 ## Features
