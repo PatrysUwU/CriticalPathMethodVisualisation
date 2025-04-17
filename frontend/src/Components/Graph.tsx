@@ -30,7 +30,7 @@ const getLayoutedElements = (nodes, edges) => {
   });
 
   nodes.forEach((node) => {
-    dagreGraph.setNode(node.id, { width: 250, height: 150 });
+    dagreGraph.setNode(node.id, { width: 100, height: 100 });
   });
 
   edges.forEach((edge) => {

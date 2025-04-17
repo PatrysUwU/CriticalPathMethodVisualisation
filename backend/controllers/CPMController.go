@@ -66,27 +66,12 @@ func TestData(c *fiber.Ctx) error {
 	return c.JSON(&fiber.Map{"nodes": testNodes, "edges": testEdges})
 }
 
-func fillNodeEdgeData(nodeMap map[string]*CPMNode, edgeMap map[string]Edge) (*CPMNode, []*CPMNode) {
-	var lastNode *CPMNode
-	var startNodes []*CPMNode
+func fillNodeEdgeData(nodeMap map[string]*CPMNode, edgeMap map[string]Edge)  {
 
 	for _, edge := range edgeMap {
 		nodeMap[edge.Source].NextNodes = append(nodeMap[edge.Source].NextNodes, edge.Target)
 		nodeMap[edge.Target].PrevNodes = append(nodeMap[edge.Target].PrevNodes, edge.Source)
 	}
-
-	for _, node := range nodeMap {
-		if len(node.PrevNodes) == 0 {
-			node.IsStart = true
-			startNodes = append(startNodes, node)
-		}
-		if len(node.NextNodes) == 0 {
-			node.IsEnd = true
-			lastNode = node
-		}
-	}
-
-	return lastNode, startNodes
 }
 
 func forwardStep(nodeMap map[string]*CPMNode, root *CPMNode) {
@@ -164,12 +149,30 @@ func RealData(c *fiber.Ctx) error {
 
 	}
 
-	lastNode, startNodes := fillNodeEdgeData(nodeMap, edgeMap)
+	fillNodeEdgeData(nodeMap, edgeMap)
+
+	lastNode := &CPMNode{ID:"END", IsEnd: true} 
+	startNode:= &CPMNode{ID:"START", IsStart: true} 
+
+	for _,node := range nodeMap{
+		if len(node.NextNodes) == 0{
+			node.NextNodes = append(node.NextNodes, lastNode.ID)
+			lastNode.PrevNodes = append(lastNode.PrevNodes, node.ID)
+			edgeMap[node.ID + "->END"] = Edge{ID: node.ID + "->END",Source: node.ID, Target: "END"}
+		}
+		if len(node.PrevNodes) == 0 {
+			node.PrevNodes = append(node.PrevNodes, startNode.ID)
+			startNode.NextNodes = append(startNode.NextNodes, node.ID)
+			edgeMap["START->"+node.ID] = Edge{ID: "START->"+node.ID,Source: "START", Target: node.ID}
+		}
+	}
+
+	nodeMap["START"] = startNode
+	nodeMap["END"] = lastNode
 
 	forwardStep(nodeMap, lastNode)
-	for _, node := range startNodes {
-		backwardStep(nodeMap, node)
-	}
+	backwardStep(nodeMap, startNode)
+
 	for _, node := range nodeMap {
 		fmt.Println(node)
 	}
