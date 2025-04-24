@@ -34,6 +34,7 @@ export default function TablePage() {
           </TableHead>
           <TableBody>
             {rows.map((row: CPMNode) => (
+              (row.id != "END" && row.id != "START")  ? (
               <TableRow
                 key={row.data.label}
                 sx={{
@@ -54,7 +55,9 @@ export default function TablePage() {
                 <TableCell>{row.data.ef}</TableCell>
                 <TableCell>{row.data.lf}</TableCell>
                 <TableCell>{row.data.z}</TableCell>
-              </TableRow>
+              </TableRow>) : ""
+
+
             ))}
           </TableBody>
         </Table>
