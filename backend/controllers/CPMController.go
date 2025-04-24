@@ -1,11 +1,13 @@
 package controllers
 
 import (
+	"errors"
 	"fmt"
-	"github.com/gofiber/fiber/v2"
 	"math"
 	"sort"
 	"strings"
+
+	"github.com/gofiber/fiber/v2"
 )
 
 type CPMNodeData struct {
@@ -66,12 +68,19 @@ func TestData(c *fiber.Ctx) error {
 	return c.JSON(&fiber.Map{"nodes": testNodes, "edges": testEdges})
 }
 
-func fillNodeEdgeData(nodeMap map[string]*CPMNode, edgeMap map[string]Edge)  {
+func fillNodeEdgeData(nodeMap map[string]*CPMNode, edgeMap map[string]Edge) error {
 
 	for _, edge := range edgeMap {
+		if _,exists := nodeMap[edge.Source]; !exists{
+			return errors.New("Blad");	
+		}
+		if _,exists := nodeMap[edge.Target]; !exists{
+			return errors.New("Blad");	
+		}
 		nodeMap[edge.Source].NextNodes = append(nodeMap[edge.Source].NextNodes, edge.Target)
 		nodeMap[edge.Target].PrevNodes = append(nodeMap[edge.Target].PrevNodes, edge.Source)
 	}
+	return nil;
 }
 
 func forwardStep(nodeMap map[string]*CPMNode, root *CPMNode) {
@@ -149,8 +158,12 @@ func RealData(c *fiber.Ctx) error {
 
 	}
 
-	fillNodeEdgeData(nodeMap, edgeMap)
-
+	err := fillNodeEdgeData(nodeMap, edgeMap)
+	if err!=nil{
+		return fiber.ErrBadRequest
+	}
+	
+		
 	lastNode := &CPMNode{ID:"END", IsEnd: true} 
 	startNode:= &CPMNode{ID:"START", IsStart: true} 
 

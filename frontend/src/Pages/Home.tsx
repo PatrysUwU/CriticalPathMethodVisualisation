@@ -1,4 +1,4 @@
-import { Container, Typography, Button, Box, TextField } from "@mui/material";
+import { Container, Typography, Button, Box, TextField, Snackbar } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { FieldArray, Form, Formik } from "formik";
 import * as Yup from "yup";
@@ -36,6 +36,7 @@ export default function Home() {
   const navigate = useNavigate();
   const [formValues, setFormValues] = useState(initialValues);
   const [location, setLocation] = useState("graph");
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     const storedValues = localStorage.getItem("formData");
@@ -56,10 +57,18 @@ export default function Home() {
         validationSchema={validationSchema}
         onSubmit={async (values) => {
           localStorage.setItem("formData", JSON.stringify(values));
-          const response = await axios.default.post(
+          let response = "";
+          try{
+          response = await axios.default.post(
             "http://localhost:3000/CPM",
             values,
-          );
+          );}
+          catch {
+              setOpen(true)
+              return
+          }; 
+
+
           const newNodes = response.data.nodes.map((item) => ({
             id: item.id,
             type: "CPMNode",
@@ -199,6 +208,11 @@ export default function Home() {
           </Form>
         )}
       </Formik>
+      <Snackbar
+      open={open}
+      autoHideDuration={3000}
+      message="Wrong items in `Prev activity` field"
+      />
     </Container>
   );
 }
